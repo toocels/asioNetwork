@@ -1,0 +1,14 @@
+{
+    "build_systems": [{
+        "cmd": ["g++ -o out/testC test/mainC.cpp -Isrc -Iinclude -lpthread -std=c++17 && ./out/testC"],
+        "name": "Debug",
+        "shell": true,
+        "working_dir": "$folder"
+    }],
+    "folders": [{
+        "path": "bin/.."
+    }],
+    "settings": {
+        "tab_size": 4
+    }
+}
