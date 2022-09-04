@@ -1,6 +1,5 @@
 #include "Server.h"
-
-using asio::ip::tcp;
+	
 
 Server::Server(int iPORT, std::string iADDR, const char* logLoc) {
 	PORT = iPORT;

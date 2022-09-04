@@ -12,7 +12,7 @@ using asio::ip::tcp;
 
 class Server
 {
-public:
+private:
 	int PORT;
 	std::string ADDR;
 	asio::error_code ec;
@@ -21,17 +21,21 @@ public:
 	std::vector<tcp::socket*> to_del_clients;
 	std::ofstream logFile;
 
-	Server(int iPORT, std::string iADDR, const char* logLoc = "./log.txt");
+public:
+	Server(int iPORT, std::string iADDR, const char* logLoc = "./out/log.txt");
 	void listen_connections();
 	void listen_messages(void recvMsg(std::string msg, Server *server));
-	bool disconnectClient(tcp::socket* client);
 	void send_message(tcp::socket* client, std::string msg);
 	void logMsg(const char* logMsg);
+	
+	bool disconnectClient(tcp::socket* client);
 	bool rmClient(tcp::socket* client);
+	
+	int keyToIndex(std::string key);
 	std::string indexToKey(int ind);
 	tcp::socket* keyToValue(std::string key);
 	std::string valueToKey(tcp::socket* value);
-	int keyToIndex(std::string key);
+
 	std::string timeSinceEpochMillisec();
 	std::string make_daytime_string();
 };

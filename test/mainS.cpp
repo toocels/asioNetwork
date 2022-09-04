@@ -11,7 +11,7 @@ void recvMsg(std::string msg, Server *server){
 
 int main() {
 
-	Server server(69, "127.0.0.1", "./out/log.txt");
+	Server server(69, "127.0.0.1");
 	
 	cout << ":Listening for connections:" << endl;
 	std::thread thread_obj(&Server::listen_connections, &server);
