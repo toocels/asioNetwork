@@ -3,15 +3,15 @@
 using asio::ip::tcp;
 
 Server::Server(int iPORT, std::string iADDR, const char* logLoc) {
-	this->PORT = iPORT;
-	this->ADDR = iADDR;
+	PORT = iPORT;
+	ADDR = iADDR;
 	logFile.open(logLoc);
-	this->logMsg("Server class intialised.\n");
+	logMsg("Server class intialised.\n");
 }
 
 void Server::listen_connections() {
-	tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), this->PORT));
-	this->logMsg("[SERVER] Waiting for connections.\n");
+	tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), PORT));
+	logMsg("[SERVER] Waiting for connections.\n");
 	try {
 		while (true) {
 			tcp::socket* socket = new tcp::socket(io_context);
@@ -19,13 +19,13 @@ void Server::listen_connections() {
 			std::string timeString = timeSinceEpochMillisec();
 
 			clients.insert(std::pair<std::string, tcp::socket*>(timeString, socket));
-			this->logMsg("[SERVER] New connection accepted.\n");
+			logMsg("[SERVER] New connection accepted.\n");
 
-			this->send_message(socket, timeString); // timestring is clients name.id
+			send_message(socket, timeString); // timestring is clients name.id
 			sleep(0.5);
 		}
 	} catch (std::exception& e) {
-		this->logMsg("[SERVER] Error accepting connection:\n");
+		logMsg("[SERVER] Error accepting connection:\n");
 		// std::cerr << "" << e.what() << std::endl;
 		return;
 	}
@@ -35,7 +35,7 @@ void Server::listen_messages(void recvMsg(std::string msg, Server *server)) {
 	while (true) {
 		while ( to_del_clients.size() > 0) {
 			auto client = to_del_clients[0];
-			this->disconnectClient(client);
+			disconnectClient(client);
 			to_del_clients.erase(to_del_clients.begin());
 		}
 
@@ -69,12 +69,12 @@ void Server::listen_messages(void recvMsg(std::string msg, Server *server)) {
 
 
 bool Server::disconnectClient(tcp::socket* client) {
-	this->send_message(client, "exit");
-	this->rmClient(client);
+	send_message(client, "exit");
+	rmClient(client);
 	client->shutdown(client->shutdown_both, ec);
 
 	delete client;
-	this->logMsg("[SERVER] Ended a connection\n");
+	logMsg("[SERVER] Ended a connection\n");
 	return true;
 }
 
@@ -91,32 +91,32 @@ void Server::logMsg(const char* logMsg) {
 }
 
 bool Server::rmClient(tcp::socket* client) {
-	auto key = this->valueToKey(client);
+	auto key = valueToKey(client);
 	clients.erase(clients.find(key));
 	return true;
 }
 
 std::string Server::indexToKey(int ind) {
-	auto it = this->clients.begin();
+	auto it = clients.begin();
 	std::advance(it, ind);
 	return it->first;
 }
 
 tcp::socket* Server::keyToValue(std::string key) {
-	auto indexElem = this->clients.find(key);
+	auto indexElem = clients.find(key);
 	return indexElem->second;
 }
 
 std::string Server::valueToKey(tcp::socket* value) {
-	for (auto i : this->clients)
+	for (auto i : clients)
 		if (i.second == value)
 			return i.first;
 	return "-";
 }
 
 int Server::keyToIndex(std::string key) {
-	auto toFind = this->clients.find(key);
-	return distance(this->clients.begin(), toFind );
+	auto toFind = clients.find(key);
+	return distance(clients.begin(), toFind );
 }
 
 std::string Server::timeSinceEpochMillisec() {

@@ -1,8 +1,8 @@
 #include "Client.h"
 
 bool Client::connect(int lPORT, std::string lADDR) {
-	this->PORT = lPORT;
-	this->ADDR = lADDR;
+	PORT = lPORT;
+	ADDR = lADDR;
 
 	// asio::ip::tcp::resolver resolver(io_context);
 	try {
