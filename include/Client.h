@@ -1,5 +1,11 @@
 #pragma once
 
+#include <iostream>
+#include <asio.hpp>
+#include <iomanip>
+#include <math.h>
+#include <string>
+
 class Client
 {
 public:

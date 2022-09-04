@@ -1,6 +1,3 @@
-#include <asio.hpp>
-#include <iomanip>
-#include <math.h>
 #include "Client.h"
 
 bool Client::connect(int lPORT, std::string lADDR) {

@@ -1,5 +1,13 @@
 #pragma once
 
+#include <iostream>
+#include <map>
+#include <math.h>
+#include <asio.hpp>
+#include <fstream>
+#include <iomanip>
+#include <string>
+
 using asio::ip::tcp;
 
 class Server
