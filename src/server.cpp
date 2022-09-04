@@ -67,41 +67,6 @@ void Server::listen_messages(void recvMsg(std::string msg, Server *server)) {
 	}
 }
 
-// void Server::listen_messages(std::map<tcp::socket*, std::string> *msgBuffer) {
-// 	while (true) {
-// 		while ( to_del_clients.size() > 0) {
-// 			auto client = to_del_clients[0];
-// 			this->disconnectClient(client);
-// 			to_del_clients.erase(to_del_clients.begin());
-// 		}
-
-// 		std::vector<char> headBuf(8);
-// 		int msgSize = 0 ;
-
-// 		for (auto clienta : clients) {
-// 			auto client = clienta.second;
-// 			size_t bytes = client->available();
-
-// 			if (bytes > 0)
-// 				client->read_some(asio::buffer(headBuf), ec);
-// 			else
-// 				continue; // this clinet sending no data
-
-// 			for (int i = 0; i < headBuf.size(); i++)
-// 				if (isdigit(headBuf[i]))
-// 					msgSize += ((int)headBuf[i] - 48) * pow(10, headBuf.size() - i - 1);
-
-// 			std::vector<char> msgBuf(msgSize);
-// 			client->read_some(asio::buffer(msgBuf), ec);
-// 			std::string msg(msgBuf.begin(), msgBuf.end());
-
-// 			msgBuffer->insert({client , msg});
-
-// 			headBuf.clear();
-// 			msgSize = 0;
-// 		}
-// 	}
-// }
 
 bool Server::disconnectClient(tcp::socket* client) {
 	this->send_message(client, "exit");

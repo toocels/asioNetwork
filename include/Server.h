@@ -24,7 +24,6 @@ public:
 	Server(int iPORT, std::string iADDR, const char* logLoc);
 	void listen_connections();
 	void listen_messages(void recvMsg(std::string msg, Server *server));
-	// void listen_messages(std::map<tcp::socket*, std::string> *msgBuffer);
 	bool disconnectClient(tcp::socket* client);
 	void send_message(tcp::socket* client, std::string msg);
 	void logMsg(const char* logMsg);

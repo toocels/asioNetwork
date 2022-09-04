@@ -18,6 +18,5 @@ public:
 	bool connect(int lPORT, std::string lADDR);
 	std::string fetch_msg();
 	void fetch_msgs(void recvMsg(std::string msg));
-	// void fetch_msgs(std::vector<std::string> *msgBuffer);
 	void sendMsg(std::string msg);
 };
