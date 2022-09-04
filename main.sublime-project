@@ -1,6 +1,6 @@
 {
     "build_systems": [{
-        "cmd": ["sudo bash installLib.sh && g++ -o out/mainC test/mainC.cpp -I/usr/include/cstm_libs -L/usr/lib/cstm_libs -lclient -lpthread -std=c++17 && g++ -o out/mainS test/mainS.cpp -I/usr/include/cstm_libs -L/usr/lib/cstm_libs -lserver -lpthread -std=c++17"],
+        "cmd": ["g++ -o out/mainC test/mainC.cpp src/client.cpp -Iinclude -lpthread -std=c++17 && g++ -o out/mainS test/mainS.cpp src/server.cpp -Iinclude -lpthread -std=c++17 && sudo ./out/mainS"],
         "name": "Debug",
         "shell": true,
         "working_dir": "$folder"
