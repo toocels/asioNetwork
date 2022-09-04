@@ -67,7 +67,6 @@ void Server::listen_messages(void recvMsg(std::string msg, Server *server)) {
 	}
 }
 
-
 bool Server::disconnectClient(tcp::socket* client) {
 	send_message(client, "exit");
 	rmClient(client);

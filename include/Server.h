@@ -21,7 +21,7 @@ public:
 	std::vector<tcp::socket*> to_del_clients;
 	std::ofstream logFile;
 
-	Server(int iPORT, std::string iADDR, const char* logLoc);
+	Server(int iPORT, std::string iADDR, const char* logLoc = "./log.txt");
 	void listen_connections();
 	void listen_messages(void recvMsg(std::string msg, Server *server));
 	bool disconnectClient(tcp::socket* client);
