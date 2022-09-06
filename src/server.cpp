@@ -37,6 +37,45 @@ void Server::listen_connections() {
 	}
 }
 
+std::pair<std::string, tcp::socket*> Server::listen_message(){
+	while ( to_del_clients.size() > 0) {
+		auto client = to_del_clients[0];
+		disconnectClient(client);
+		to_del_clients.erase(to_del_clients.begin());
+	}
+
+
+	std::vector<char> headBuf(8);
+	int msgSize = 0 ;
+	std::pair<std::string, tcp::socket*> ret;
+	ret.first = "";
+	ret.second = nullptr;
+
+	for (auto clienta : clients) {
+		auto client = clienta.second;
+		size_t bytes = client->available();
+
+		if (bytes > 0)
+			client->read_some(asio::buffer(headBuf), ec);
+		else
+			continue; // this clinet sending no data
+
+		for (int i = 0; i < headBuf.size(); i++)
+			if (isdigit(headBuf[i]))
+				msgSize += ((int)headBuf[i] - 48) * pow(10, headBuf.size() - i - 1);
+
+		std::vector<char> msgBuf(msgSize);
+		client->read_some(asio::buffer(msgBuf), ec);
+		std::string msg(msgBuf.begin(), msgBuf.end());
+
+		ret.first = msg;
+		ret.second = client;
+		break;
+	}
+
+	return ret;
+}
+
 void Server::listen_messages(void recvMsg(std::string msg, tcp::socket* client)) {
 	while (true) {
 		while ( to_del_clients.size() > 0) {
@@ -75,7 +114,9 @@ void Server::listen_messages(void recvMsg(std::string msg, tcp::socket* client))
 
 bool Server::disconnectClient(tcp::socket* client) {
 	send_message(client, "exit");
-	rmClient(client);
+	auto key = valueToKey(client);
+	clients.erase(clients.find(key));
+
 	client->shutdown(client->shutdown_both, ec);
 
 	delete client;
@@ -97,10 +138,8 @@ void Server::logMsg(const char* logMsg) {
 	logFile.flush();
 }
 
-bool Server::rmClient(tcp::socket* client) {
-	auto key = valueToKey(client);
-	clients.erase(clients.find(key));
-	return true;
+void Server::rmClient(tcp::socket* client) {
+	to_del_clients.push_back(client);
 }
 
 std::map<std::string, tcp::socket*> Server::getClients(){

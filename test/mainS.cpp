@@ -29,7 +29,8 @@ int main() {
 			}
 		}
 		else if(cmd == "listen"){
-			server.listen_messages(recvMsg);
+			auto a = server.listen_message();
+			cout << "Msg: " << a.first << ' ' << a.second << endl;
 		}
 	}
 

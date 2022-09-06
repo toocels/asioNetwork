@@ -29,12 +29,12 @@ public:
 	~Server();
 	void listen_connections();
 	void listen_messages(void recvMsg(std::string msg, tcp::socket* client));
-	// void listen_message();
+	std::pair<std::string, tcp::socket*> listen_message();
 	void send_message(tcp::socket* client, std::string msg);
 	void logMsg(const char* logMsg);
 	
 	bool disconnectClient(tcp::socket* client);
-	bool rmClient(tcp::socket* client);
+	void rmClient(tcp::socket* client);
 
 	std::map<std::string, tcp::socket*> getClients();
 	
