@@ -1,4 +1,6 @@
 echo "Installing custom library asioNetwork"
+echo "Installing location is in /usr/lib/cstm_libs or /usr/include/cstm_libs."
+echo "Create cstm_libs directory in those location if not already."
 
 gcc -c src/server.cpp -Iinclude -o obj/server.o
 gcc -c src/client.cpp -Iinclude -o obj/client.o
