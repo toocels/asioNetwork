@@ -1,10 +1,10 @@
 #include "Server.h"
 	
 
-Server::Server(int iPORT, std::string iADDR, const char* logLoc) {
-	PORT = iPORT;
-	ADDR = iADDR;
-	logFile.open(logLoc);
+Server::Server(int iPORT, std::string iADDR, const char* logLoc, bool idoLog) 
+ :PORT(iPORT), ADDR(iADDR), doLog(idoLog){
+ 	if(doLog)
+		logFile.open(logLoc);
 	logMsg("Server class intialised.\n");
 }
 
@@ -84,6 +84,8 @@ void Server::send_message(tcp::socket* client, std::string msg) {
 }
 
 void Server::logMsg(const char* logMsg) {
+	if(!doLog) return;
+
 	logFile << logMsg ;
 	logFile.flush();
 }
@@ -93,6 +95,8 @@ bool Server::rmClient(tcp::socket* client) {
 	clients.erase(clients.find(key));
 	return true;
 }
+
+
 
 std::string Server::indexToKey(int ind) {
 	auto it = clients.begin();
@@ -116,6 +120,8 @@ int Server::keyToIndex(std::string key) {
 	auto toFind = clients.find(key);
 	return distance(clients.begin(), toFind );
 }
+
+
 
 std::string Server::timeSinceEpochMillisec() {
 	using namespace std::chrono;

@@ -20,9 +20,10 @@ private:
 	std::map<std::string, tcp::socket*> clients;
 	std::vector<tcp::socket*> to_del_clients;
 	std::ofstream logFile;
+	bool doLog = false;
 
 public:
-	Server(int iPORT, std::string iADDR, const char* logLoc = "./out/log.txt");
+	Server(int iPORT, std::string iADDR, const char* logLoc = "./out/log.txt", bool doLog = false);
 	void listen_connections();
 	void listen_messages(void recvMsg(std::string msg, Server *server));
 	void send_message(tcp::socket* client, std::string msg);
