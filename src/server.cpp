@@ -22,7 +22,7 @@ void Server::listen_connections() {
 		while (true) {
 			tcp::socket* socket = new tcp::socket(io_context);
 			acceptor.accept(*socket); //blocking
-			std::string timeString = timeSinceEpochMillisec();
+			std::string timeString = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
 			clients.insert(std::pair<std::string, tcp::socket*>(timeString, socket));
 			logMsg("[SERVER] New connection accepted.\n");
@@ -37,7 +37,7 @@ void Server::listen_connections() {
 	}
 }
 
-void Server::listen_messages(void recvMsg(std::string msg, Server *server)) {
+void Server::listen_messages(void recvMsg(std::string msg, tcp::socket* client)) {
 	while (true) {
 		while ( to_del_clients.size() > 0) {
 			auto client = to_del_clients[0];
@@ -65,7 +65,7 @@ void Server::listen_messages(void recvMsg(std::string msg, Server *server)) {
 			client->read_some(asio::buffer(msgBuf), ec);
 			std::string msg(msgBuf.begin(), msgBuf.end());
 
-			recvMsg(msg, this);
+			recvMsg(msg, client);
 
 			headBuf.clear();
 			msgSize = 0;
@@ -129,11 +129,4 @@ std::string Server::valueToKey(tcp::socket* value) {
 int Server::keyToIndex(std::string key) {
 	auto toFind = clients.find(key);
 	return distance(clients.begin(), toFind );
-}
-
-
-
-std::string Server::timeSinceEpochMillisec() {
-	using namespace std::chrono;
-	return std::to_string(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
 }

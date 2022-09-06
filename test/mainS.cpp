@@ -6,8 +6,8 @@
 using std::cout, std::endl;
 using std::cout, std::endl, std::cin;
 
-void recvMsg(std::string msg, Server *server){
-	cout << "Msg from client: " << msg << endl;
+void recvMsg(std::string msg, tcp::socket* client){
+	cout << "Msg from client: " << msg  << " " << client << endl;
 }
 
 int main() {
