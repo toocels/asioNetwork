@@ -43,5 +43,4 @@ public:
 	std::string valueToKey(tcp::socket* value);
 
 	std::string timeSinceEpochMillisec();
-	std::string make_daytime_string();
 };

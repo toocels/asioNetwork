@@ -137,8 +137,3 @@ std::string Server::timeSinceEpochMillisec() {
 	using namespace std::chrono;
 	return std::to_string(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
 }
-
-std::string Server::make_daytime_string() {
-	time_t now = time(0);
-	return ctime(&now);
-}

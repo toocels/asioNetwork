@@ -15,7 +15,7 @@ int main() {
 	Server server(69, "127.0.0.1");
 	
 	cout << ":Listening for connections:" << endl;
-	std::thread thread_obj(&Server::listen_connections, &server);
+	std::thread listen_connections(&Server::listen_connections, &server);
 
 	while(true){
 		std::string cmd;
@@ -25,12 +25,13 @@ int main() {
 			break;
 		else if(cmd == "cons"){
 			for(auto client : server.getClients()){
-				cout << "a" << endl;
+				cout << client.first << ' ' << client.second << endl;
 			}
 		}
-		cout << cmd << endl;
+		else if(cmd == "listen"){
+			server.listen_messages(recvMsg);
+		}
 	}
-	// server.listen_messages(recvMsg);
 
 	return 0;
 }
