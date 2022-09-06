@@ -8,6 +8,13 @@ Server::Server(int iPORT, std::string iADDR, const char* logLoc, bool idoLog)
 	logMsg("Server class intialised.\n");
 }
 
+Server::~Server(){
+	for(auto client : clients){
+
+	}
+	std::cout << "Server object deleted." << std::endl;
+}
+
 void Server::listen_connections() {
 	tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), PORT));
 	logMsg("[SERVER] Waiting for connections.\n");
@@ -96,6 +103,9 @@ bool Server::rmClient(tcp::socket* client) {
 	return true;
 }
 
+std::map<std::string, tcp::socket*> Server::getClients(){
+	return clients;
+}
 
 
 std::string Server::indexToKey(int ind) {

@@ -26,6 +26,7 @@ private:
 
 public:
 	Server(int iPORT, std::string iADDR, const char* logLoc = "./log.txt", bool doLog = false);
+	~Server();
 	void listen_connections();
 	void listen_messages(void recvMsg(std::string msg, Server *server));
 	void send_message(tcp::socket* client, std::string msg);
@@ -33,6 +34,8 @@ public:
 	
 	bool disconnectClient(tcp::socket* client);
 	bool rmClient(tcp::socket* client);
+
+	std::map<std::string, tcp::socket*> getClients();
 	
 	int keyToIndex(std::string key);
 	std::string indexToKey(int ind);
