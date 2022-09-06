@@ -21,7 +21,7 @@ void Server::listen_connections() {
 			logMsg("[SERVER] New connection accepted.\n");
 
 			send_message(socket, timeString); // timestring is clients name.id
-			sleep(0.5);
+			sleep(CONNECTION_LISTEN_DELAY);
 		}
 	} catch (std::exception& e) {
 		logMsg("[SERVER] Error accepting connection:\n");
