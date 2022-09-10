@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <string>
 
-#define CONNECTION_LISTEN_DELAY 1 // limits speed at which connections are accepted
+#define CONNECTION_LISTEN_DELAY 1 // limits speed at which connections are accepted for "listen_messages()"
 
 using asio::ip::tcp;
 
@@ -23,6 +23,7 @@ private:
 	std::vector<tcp::socket*> to_del_clients;
 	std::ofstream logFile;
 	bool doLog = false;
+	bool disconnectClient(tcp::socket* client);
 
 public:
 	Server(int iPORT, std::string iADDR, const char* logLoc = "./log.txt", bool doLog = false);
@@ -33,12 +34,10 @@ public:
 	void send_message(tcp::socket* client, std::string msg);
 	void logMsg(const char* logMsg);
 	
-	bool disconnectClient(tcp::socket* client);
-	void rmClient(tcp::socket* client);
+	void addToDelClients(tcp::socket* client);
 
-	std::map<std::string, tcp::socket*> getClients();
-	
 	int keyToIndex(std::string key);
+	std::map<std::string, tcp::socket*> getClients();
 	std::string indexToKey(int ind);
 	tcp::socket* keyToValue(std::string key);
 	std::string valueToKey(tcp::socket* value);

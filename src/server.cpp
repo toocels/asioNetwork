@@ -124,6 +124,10 @@ bool Server::disconnectClient(tcp::socket* client) {
 	return true;
 }
 
+void Server::addToDelClients(tcp::socket* client) {
+	to_del_clients.push_back(client);
+}
+
 void Server::send_message(tcp::socket* client, std::string msg) {
 	std::stringstream ss;
 	ss << std::setw(8) << std::setfill('0') << msg.length();
@@ -136,10 +140,6 @@ void Server::logMsg(const char* logMsg) {
 
 	logFile << logMsg ;
 	logFile.flush();
-}
-
-void Server::rmClient(tcp::socket* client) {
-	to_del_clients.push_back(client);
 }
 
 std::map<std::string, tcp::socket*> Server::getClients(){
