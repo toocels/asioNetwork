@@ -146,7 +146,6 @@ std::map<std::string, tcp::socket*> Server::getClients(){
 	return clients;
 }
 
-
 std::string Server::indexToKey(int ind) {
 	auto it = clients.begin();
 	std::advance(it, ind);
@@ -168,4 +167,15 @@ std::string Server::valueToKey(tcp::socket* value) {
 int Server::keyToIndex(std::string key) {
 	auto toFind = clients.find(key);
 	return distance(clients.begin(), toFind );
+}
+
+int Server::valueToIndex(tcp::socket* value){
+	int ind=0;
+	for(auto i: clients){
+		if (i.second == value){
+			return ind;
+		}
+		ind +=1;
+	}
+	return -1;
 }

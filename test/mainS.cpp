@@ -28,9 +28,26 @@ int main() {
 				cout << client.first << ' ' << client.second << endl;
 			}
 		}
-		else if(cmd == "listen"){
+		else if(cmd == "msgs"){
 			auto a = server.listen_message();
 			cout << "Msg: " << a.first << ' ' << a.second << endl;
+		}
+		else if(cmd == "rm"){
+			std::string inp;
+			cout << "By index/ key: ";
+			cin >> inp;
+			if(inp == "ind"){
+				int ind;
+				cout << "Ind = ";
+				cin >> ind;
+				server.addToDelClients(server.keyToValue(server.indexToKey(ind)));
+			}
+			else if(inp == "key"){
+				std::string key;
+				cout << "Key = ";
+				cin >> key;
+				server.addToDelClients(server.keyToValue(key));	
+			}
 		}
 	}
 
