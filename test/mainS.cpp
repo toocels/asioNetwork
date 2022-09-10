@@ -15,9 +15,9 @@ int main() {
 	Server server(69, "127.0.0.1");
 	
 	cout << ":Listening for connections:" << endl;
-	std::thread listen_connections(&Server::listen_connections, &server);
+	// std::thread listen_connections(&Server::listen_connections, &server);
 
-	while(true){
+	while(false){
 		std::string cmd;
 		cout << "Cmd: ";
 		cin >> cmd;

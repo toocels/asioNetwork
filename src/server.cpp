@@ -9,9 +9,10 @@ Server::Server(int iPORT, std::string iADDR, const char* logLoc, bool idoLog)
 }
 
 Server::~Server(){
-	for(auto client : clients){
-
-	}
+	for(auto client : clients)
+		delete client.second;
+	for(auto client : to_del_clients)
+		delete client;
 	std::cout << "Server object deleted." << std::endl;
 }
 

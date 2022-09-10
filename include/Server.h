@@ -30,9 +30,9 @@ public:
 	Server(int iPORT, std::string iADDR, const char* logLoc = "./log.txt", bool doLog = false);
 	~Server();
 	void listen_connections();
+	void send_message(tcp::socket* client, std::string msg);
 	void listen_messages(void recvMsg(std::string msg, tcp::socket* client));
 	std::pair<std::string, tcp::socket*> listen_message();
-	void send_message(tcp::socket* client, std::string msg);
 	
 	void addToDelClients(tcp::socket* client);
 	std::map<std::string, tcp::socket*> getClients();
