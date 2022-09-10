@@ -35,11 +35,12 @@ public:
 	void send_message(tcp::socket* client, std::string msg);
 	
 	void addToDelClients(tcp::socket* client);
+	std::map<std::string, tcp::socket*> getClients();
 
 	int keyToIndex(std::string key);
-	std::map<std::string, tcp::socket*> getClients();
 	std::string indexToKey(int ind);
 	tcp::socket* keyToValue(std::string key);
 	std::string valueToKey(tcp::socket* value);
 	int valueToIndex(tcp::socket* value);
+	tcp::socket* indexToValue(int ind);
 };

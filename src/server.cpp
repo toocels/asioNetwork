@@ -157,18 +157,6 @@ tcp::socket* Server::keyToValue(std::string key) {
 	return indexElem->second;
 }
 
-std::string Server::valueToKey(tcp::socket* value) {
-	for (auto i : clients)
-		if (i.second == value)
-			return i.first;
-	return "-";
-}
-
-int Server::keyToIndex(std::string key) {
-	auto toFind = clients.find(key);
-	return distance(clients.begin(), toFind );
-}
-
 int Server::valueToIndex(tcp::socket* value){
 	int ind=0;
 	for(auto i: clients){
@@ -178,4 +166,24 @@ int Server::valueToIndex(tcp::socket* value){
 		ind +=1;
 	}
 	return -1;
+}
+
+
+
+std::string Server::valueToKey(tcp::socket* value) {
+	auto ind = valueToIndex(value);
+	auto key = indexToKey(ind);
+	return key;
+}
+
+int Server::keyToIndex(std::string key) {
+	auto value = keyToValue(key);
+	auto index = valueToIndex(value);
+	return index;
+}
+
+tcp::socket* Server::indexToValue(int ind){
+	auto key = indexToKey(ind);
+	auto value = keyToValue(key);
+	return value;
 }
