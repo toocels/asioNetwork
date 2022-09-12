@@ -13,7 +13,6 @@ Server::~Server(){
 		delete client.second;
 	for(auto client : to_del_clients)
 		delete client;
-	std::cout << "Server object deleted." << std::endl;
 }
 
 void Server::listen_connections() {
@@ -29,7 +28,7 @@ void Server::listen_connections() {
 			logMsg("[SERVER] New connection accepted.\n");
 
 			send_message(socket, timeString); // timestring is clients name.id
-			sleep(CONNECTION_LISTEN_DELAY);
+			usleep(CONNECTIONS_LISTEN_DELAY_MS);
 		}
 	} catch (std::exception& e) {
 		logMsg("[SERVER] Error accepting connection:\n");

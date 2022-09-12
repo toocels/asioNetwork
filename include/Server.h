@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <string>
 
-#define CONNECTION_LISTEN_DELAY 1 // limits speed at which connections are accepted for "listen_messages()"
+#define CONNECTIONS_LISTEN_DELAY_MS 500 // limits speed at which connections are accepted for "listen_messages()"
 
 using asio::ip::tcp;
 
