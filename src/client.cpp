@@ -1,22 +1,20 @@
-#include "Client.h"
+#include "cstm_libs/Client.h"
 
-bool Client::connect(int lPORT, std::string lADDR) {
-	PORT = lPORT;
-	ADDR = lADDR;
+bool Client::connect(int PORT, string IP) {
+	this->PORT = PORT;
+	this->IP = IP;
 
-	// asio::ip::tcp::resolver resolver(io_context);
 	try {
-		asio::ip::tcp::endpoint endpoints(asio::ip::make_address(ADDR, ec), PORT);
+		asio::ip::tcp::endpoint endpoints(asio::ip::make_address(IP, ec), PORT);
 		socket.connect(endpoints);
 		return true;
-	}
-	catch (...) {
+	} catch (...) {
 		return false;
 	}
 }
 
-std::string Client::fetch_msg() {
-	std::vector<char> headBuf(8);
+string Client::fetch_msg() {
+	vector<char> headBuf(8);
 	size_t bytes = socket.available();
 
 	if (bytes > 0)
@@ -29,16 +27,16 @@ std::string Client::fetch_msg() {
 		if (isdigit(headBuf[i]))
 			msgSize += ((int)headBuf[i] - 48) * pow(10, headBuf.size() - i - 1);
 
-	std::vector<char> msgBuf(msgSize);
+	vector<char> msgBuf(msgSize);
 	socket.read_some(asio::buffer(msgBuf), ec);
-	std::string msg(msgBuf.begin(), msgBuf.end());
+	string msg(msgBuf.begin(), msgBuf.end());
 
 	return msg;
 }
 
-void Client::fetch_msgs(void recvMsg(std::string msg)) {
+void Client::fetch_msgs(void recvMsg(string msg)) {
 	while (true) {
-		std::vector<char> headBuf(8);
+		vector<char> headBuf(8);
 		int msgSize = 0 ;
 
 		size_t bytes = socket.available();
@@ -52,17 +50,17 @@ void Client::fetch_msgs(void recvMsg(std::string msg)) {
 			if (isdigit(headBuf[i]))
 				msgSize += ((int)headBuf[i] - 48) * pow(10, headBuf.size() - i - 1);
 
-		std::vector<char> msgBuf(msgSize);
+		vector<char> msgBuf(msgSize);
 		socket.read_some(asio::buffer(msgBuf), ec);
-		std::string msg(msgBuf.begin(), msgBuf.end());
+		string msg(msgBuf.begin(), msgBuf.end());
 
 		recvMsg(msg);
 	}
 }
 
-void Client::sendMsg(std::string msg) {
-	std::stringstream ss;
-	ss << std::setw(8) << std::setfill('0') << msg.length();
+void Client::sendMsg(string msg) {
+	stringstream ss;
+	ss << setw(8) << setfill('0') << msg.length();
 	asio::write(socket, asio::buffer(ss.str()), ec);
 	asio::write(socket, asio::buffer(msg), ec);
 }

@@ -1,58 +1,61 @@
-#include "Server.h"
-	
+#include "cstm_libs/Server.h"
 
-Server::Server(int iPORT, std::string iADDR, const char* logLoc, bool idoLog) 
- :PORT(iPORT), ADDR(iADDR), doLog(idoLog){
- 	if(doLog)
-		logFile.open(logLoc);
-	logMsg("Server class intialised.\n");
-}
 
-Server::~Server(){
-	for(auto client : clients)
-		delete client.second;
-	for(auto client : to_del_clients)
-		delete client;
+Server::Server(int PORT, string IP) {
+	this->PORT = PORT;
+	this->IP = IP;
+	logMsg("Server class intialised.");
 }
 
 void Server::listen_connections() {
+	asio::io_context io_context;
 	tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), PORT));
-	logMsg("[SERVER] Waiting for connections.\n");
+	logMsg("[ SERVER ] Waiting for connections.");
 	try {
 		while (true) {
 			tcp::socket* socket = new tcp::socket(io_context);
 			acceptor.accept(*socket); //blocking
-			std::string timeString = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
-			clients.insert(std::pair<std::string, tcp::socket*>(timeString, socket));
-			logMsg("[SERVER] New connection accepted.\n");
+			string timeString = to_string(chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count());
+			clients.push_back(socket);
+			logMsg("[ SERVER ] New connection accepted.");
 
-			send_message(socket, timeString); // timestring is clients name.id
-			usleep(CONNECTIONS_LISTEN_DELAY_MS);
+			send_message(socket, timeString); // timestring is clients name.id// now more like ack
+			usleep(CONNECTIONS_LISTEN_DELAY_US);
 		}
-	} catch (std::exception& e) {
-		logMsg("[SERVER] Error accepting connection:\n");
-		// std::cerr << "" << e.what() << std::endl;
+	} catch (exception& e) {
+		logMsg("[ SERVER ] Error accepting connection:");
+		// cerr << "" << e.what() << endl;
 		return;
 	}
 }
 
-std::pair<std::string, tcp::socket*> Server::listen_message(){
+void Server::logMsg(const string& logMsg) {
+	cout << logMsg << endl;
+}
+
+void Server::send_message(tcp::socket* client, string msg) {
+	stringstream ss;
+	asio::error_code ec;
+	ss << setw(8) << setfill('0') << msg.length();
+	asio::write(*client, asio::buffer(ss.str()), ec);
+	asio::write(*client, asio::buffer(msg), ec);
+}
+
+pair<string, tcp::socket*> Server::listen_message() {
 	while ( to_del_clients.size() > 0) {
 		auto client = to_del_clients[0];
 		disconnectClient(client);
 		to_del_clients.erase(to_del_clients.begin());
 	}
 
-
-	std::vector<char> headBuf(8);
 	int msgSize = 0 ;
-	std::pair<std::string, tcp::socket*> ret;
+	vector<char> headBuf(8);
+	pair<string, tcp::socket*> ret;
 	ret.first = "";
 	ret.second = nullptr;
 
-	for (auto clienta : clients) {
-		auto client = clienta.second;
+	for (auto client : clients) {
 		size_t bytes = client->available();
 
 		if (bytes > 0)
@@ -64,9 +67,9 @@ std::pair<std::string, tcp::socket*> Server::listen_message(){
 			if (isdigit(headBuf[i]))
 				msgSize += ((int)headBuf[i] - 48) * pow(10, headBuf.size() - i - 1);
 
-		std::vector<char> msgBuf(msgSize);
+		vector<char> msgBuf(msgSize);
 		client->read_some(asio::buffer(msgBuf), ec);
-		std::string msg(msgBuf.begin(), msgBuf.end());
+		string msg(msgBuf.begin(), msgBuf.end());
 
 		ret.first = msg;
 		ret.second = client;
@@ -76,7 +79,17 @@ std::pair<std::string, tcp::socket*> Server::listen_message(){
 	return ret;
 }
 
-void Server::listen_messages(void recvMsg(std::string msg, tcp::socket* client)) {
+vector<tcp::socket*> Server::getClients() {
+	return clients;
+}
+
+int Server::getIndex(tcp::socket* K) {
+	auto it = find(clients.begin(), clients.end(), K);
+	if (it != clients.end()) return it - clients.begin();
+	else return -1;
+}
+
+void Server::listen_messages(void recvMsg(string msg, tcp::socket* client)) {
 	while (true) {
 		while ( to_del_clients.size() > 0) {
 			auto client = to_del_clients[0];
@@ -84,11 +97,10 @@ void Server::listen_messages(void recvMsg(std::string msg, tcp::socket* client))
 			to_del_clients.erase(to_del_clients.begin());
 		}
 
-		std::vector<char> headBuf(8);
+		vector<char> headBuf(8);
 		int msgSize = 0 ;
 
-		for (auto clienta : clients) {
-			auto client = clienta.second;
+		for (auto client : clients) {
 			size_t bytes = client->available();
 
 			if (bytes > 0)
@@ -100,9 +112,9 @@ void Server::listen_messages(void recvMsg(std::string msg, tcp::socket* client))
 				if (isdigit(headBuf[i]))
 					msgSize += ((int)headBuf[i] - 48) * pow(10, headBuf.size() - i - 1);
 
-			std::vector<char> msgBuf(msgSize);
+			vector<char> msgBuf(msgSize);
 			client->read_some(asio::buffer(msgBuf), ec);
-			std::string msg(msgBuf.begin(), msgBuf.end());
+			string msg(msgBuf.begin(), msgBuf.end());
 
 			recvMsg(msg, client);
 
@@ -113,77 +125,61 @@ void Server::listen_messages(void recvMsg(std::string msg, tcp::socket* client))
 }
 
 bool Server::disconnectClient(tcp::socket* client) {
-	send_message(client, "exit");
-	auto key = valueToKey(client);
-	clients.erase(clients.find(key));
-
+	send_message(client, "close");
+	clients.erase(find(clients.begin(), clients.end(), client));
 	client->shutdown(client->shutdown_both, ec);
-
 	delete client;
-	logMsg("[SERVER] Ended a connection\n");
+
+	logMsg("[ SERVER ] Ended a connection");
 	return true;
 }
 
-void Server::addToDelClients(tcp::socket* client) {
-	to_del_clients.push_back(client);
-}
+// void Server::addToDelClients(tcp::socket* client) {
+// 	to_del_clients.push_back(client);
+// }
 
-void Server::send_message(tcp::socket* client, std::string msg) {
-	std::stringstream ss;
-	ss << std::setw(8) << std::setfill('0') << msg.length();
-	asio::write(*client, asio::buffer(ss.str()), ec);
-	asio::write(*client, asio::buffer(msg), ec);
-}
+// map<string, tcp::socket*> Server::getClients() {
+// 	return clients;
+// }
 
-void Server::logMsg(const char* logMsg) {
-	if(!doLog) return;
+// string Server::indexToKey(int ind) {
+// 	auto it = clients.begin();
+// 	advance(it, ind);
+// 	return it->first;
+// }
 
-	logFile << logMsg ;
-	logFile.flush();
-}
+// tcp::socket* Server::keyToValue(string key) {
+// 	auto indexElem = clients.find(key);
+// 	return indexElem->second;
+// }
 
-std::map<std::string, tcp::socket*> Server::getClients(){
-	return clients;
-}
-
-std::string Server::indexToKey(int ind) {
-	auto it = clients.begin();
-	std::advance(it, ind);
-	return it->first;
-}
-
-tcp::socket* Server::keyToValue(std::string key) {
-	auto indexElem = clients.find(key);
-	return indexElem->second;
-}
-
-int Server::valueToIndex(tcp::socket* value){
-	int ind=0;
-	for(auto i: clients){
-		if (i.second == value){
-			return ind;
-		}
-		ind +=1;
-	}
-	return -1;
-}
+// int Server::valueToIndex(tcp::socket* value) {
+// 	int ind = 0;
+// 	for (auto i : clients) {
+// 		if (i.second == value) {
+// 			return ind;
+// 		}
+// 		ind += 1;
+// 	}
+// 	return -1;
+// }
 
 
 
-std::string Server::valueToKey(tcp::socket* value) {
-	auto ind = valueToIndex(value);
-	auto key = indexToKey(ind);
-	return key;
-}
+// string Server::valueToKey(tcp::socket* value) {
+// 	auto ind = valueToIndex(value);
+// 	auto key = indexToKey(ind);
+// 	return key;
+// }
 
-int Server::keyToIndex(std::string key) {
-	auto value = keyToValue(key);
-	auto index = valueToIndex(value);
-	return index;
-}
+// int Server::keyToIndex(string key) {
+// 	auto value = keyToValue(key);
+// 	auto index = valueToIndex(value);
+// 	return index;
+// }
 
-tcp::socket* Server::indexToValue(int ind){
-	auto key = indexToKey(ind);
-	auto value = keyToValue(key);
-	return value;
-}
+// tcp::socket* Server::indexToValue(int ind) {
+// 	auto key = indexToKey(ind);
+// 	auto value = keyToValue(key);
+// 	return value;
+// }

@@ -1,5 +1,5 @@
 {
-    "cmd": "g++ test/mainC.cpp src/client.cpp -Iinclude -o out/mainC && g++ test/mainS.cpp src/server.cpp -Iinclude -o out/mainS && out/mainS",
+    "cmd": "sudo ./installLib.sh && g++ test/mainS.cpp -o out/mainS -L/usr/lib/cstm_libs -lserver && g++ test/mainC.cpp -o out/mainC -L/usr/lib/cstm_libs -lclient && sudo out/mainS",
     "folders": [
     {
         "path": "."

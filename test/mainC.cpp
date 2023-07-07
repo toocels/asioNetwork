@@ -1,8 +1,6 @@
+#include "cstm_libs/Client.h"
 #include <iostream>
 
-#include "cstm_libs/Client.h"
-
-using std::cout, std::endl, std::cin;
 
 int main() {
 
@@ -12,20 +10,16 @@ int main() {
 		return 0; // failed to connect
 	}
 
-	std::string cmd;
 	while (true) {
-		cout << "Cmd: ";
-		cin >> cmd;
-		if (cmd == "exit")
-			break;
-		else if (cmd == "send") {
-			std::string msg;
-			cout << "Msg: ";
-			cin >> msg;
-			cout << endl;
-			client.sendMsg(msg);
-		} else if (cmd == "recv") {
-			std::cout << client.fetch_msg() << std::endl;
+		cout << "Enter msg: ";
+		string msg; // send msg
+		getline(cin, msg);
+		client.sendMsg(msg);
+
+		string tmp = client.fetch_msg(); // recv msg
+		while (tmp != "") {
+			cout << "[ SEVER ] " << tmp << endl;
+			tmp = client.fetch_msg();
 		}
 	}
 
