@@ -1,7 +1,7 @@
 #include <iostream>
 #include <thread>
 
-#include "Server.h"
+#include "cstm_libs/Server.h"
 
 using std::cout, std::endl;
 using std::cout, std::endl, std::cin;
@@ -15,9 +15,10 @@ int main() {
 	Server server(69, "127.0.0.1");
 	
 	cout << ":Listening for connections:" << endl;
-	// std::thread listen_connections(&Server::listen_connections, &server);
+	std::thread listen_connections(&Server::listen_connections, &server);
 
-	while(false){
+	while(true){
+		continue;
 		std::string cmd;
 		cout << "Cmd: ";
 		cin >> cmd;

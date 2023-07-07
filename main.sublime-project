@@ -1,14 +1,7 @@
 {
-    "build_systems": [{
-        "cmd": ["g++ -o out/mainC test/mainC.cpp src/client.cpp -Iinclude -lpthread -std=c++17 && g++ -o out/mainS test/mainS.cpp src/server.cpp -Iinclude -lpthread -std=c++17 && sudo ./out/mainS"],
-        "name": "Debug",
-        "shell": true,
-        "working_dir": "$folder"
-    }],
-    "folders": [{
-        "path": "bin/.."
-    }],
-    "settings": {
-        "tab_size": 4
-    }
+    "cmd": "g++ test/mainC.cpp src/client.cpp -Iinclude -o out/mainC && g++ test/mainS.cpp src/server.cpp -Iinclude -o out/mainS && out/mainS",
+    "folders": [
+    {
+        "path": "."
+    }]
 }
